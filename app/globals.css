@@ -2,20 +2,60 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    --primary: 325 90% 60%;
+    --primary-foreground: 355.7 100% 97.3%;
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --accent: 325 90% 60%;
+    --accent-foreground: 240 5.9% 10%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 325 90% 60%;
+    --radius: 0.75rem;
   }
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+  body {
+    @apply bg-[#1A1F2C] text-foreground antialiased;
+  }
+  .form-container {
+    @apply relative backdrop-blur-xl bg-black/5;
+  }
+  .form-container::before {
+    content: '';
+    @apply absolute inset-0 bg-gradient-to-br from-pink-500/10 to-transparent rounded-lg -z-10;
+  }
+  .input-animation {
+    @apply transition-all duration-300 ease-in-out;
+  }
+  .form-field {
+    @apply relative overflow-hidden rounded-lg;
+  }
+  .form-field::after {
+    content: '';
+    @apply absolute bottom-0 left-0 h-[2px] w-full bg-gradient-to-r from-pink-500 to-pink-400 transform scale-x-0 transition-transform duration-300;
+  }
+  .form-field:focus-within::after {
+    @apply scale-x-100;
+  }
 }
