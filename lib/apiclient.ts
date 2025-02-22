@@ -10,6 +10,7 @@ type FetchOptions = {
 
 interface Result {
     message?: string;
+    user: User;
 }
 
 class ApiClient {
@@ -37,7 +38,7 @@ class ApiClient {
 
     //USER RELATED APIS
     async updateProfile(data: FormValues) {
-        return this.fetch<Result>("/pfp", {
+        return this.fetch<Result>("/update-profile", {
             method: "PATCH",
             body: data
         })
