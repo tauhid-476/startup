@@ -78,9 +78,10 @@ export async function PATCH(
 }
 
 //GET A SPECIFIC STARTUP
-export async function GET(req: NextRequest, { params }: {
-    params: { startupId: string }
-}) {
+export async function GET(
+    req: NextRequest, 
+    { params }: {params: Promise<{ startupId: string }> }
+) {
     try {
         const startupId = (await params).startupId;
         const session = await getServerSession(authOptions);

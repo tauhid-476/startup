@@ -17,7 +17,7 @@ enum ApplicationStatus {
 }
 //
 //hire
-export async function POST(req: NextRequest, { params }: { params: RouteParams }) {
+export async function POST(req: NextRequest, { params }: { params: Promise<RouteParams> }) {
     try {
         const { startupId, applicationId } = await params;
         const body = await req.json();

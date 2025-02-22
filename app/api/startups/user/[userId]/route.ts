@@ -4,7 +4,9 @@ import { getServerSession } from "next-auth"
 import { NextRequest, NextResponse } from "next/server"
 
 // Fetch startups for a specific user
-export async function GET(req: NextRequest, { params }: { params: { userId: string } }) {
+export async function GET(req: NextRequest, 
+  { params }: { params: Promise<{ userId: string }> }
+) {
   try {
     const session = await getServerSession(authOptions)
     if (!session) {

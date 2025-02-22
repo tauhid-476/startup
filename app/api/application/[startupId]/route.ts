@@ -19,7 +19,9 @@ const applicationSchema = z.object({
 
 
 //CREATE APPLICATION FOR A SPECIFIC STARTUP
-export async function POST(req: NextRequest, { params }: { params: { startupId: string } }) {
+export async function POST(req: NextRequest, 
+    { params }: { params: Promise<{ startupId: string }> }
+) {
     try {
         const session = await getServerSession(authOptions);
         const startupId = (await params).startupId
