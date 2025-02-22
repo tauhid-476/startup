@@ -18,7 +18,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 
 const startupSchema = z.object({
     title: z.string().min(1, "Title is required").max(20, "Title must be less than 20 characters"),
-    description: z.string().min(10, "Description is required").max(300, "Description must be less than 100 characters"),
+    description: z.string().min(10, "Description must be atlest 10 characters long").max(125, "Description must be less than 100 characters"),
     pitch: z.string().min(20, "Pitch is required").max(1000, "Pitch must be less than 1000 characters"),
     category: z.string().optional(),
     image: z.string().optional(),

@@ -147,7 +147,7 @@ export default function StartupsSection({ startups }: StartupsSectionProps) {
                                                             variant="secondary"
                                                             className="text-white bg-pink-500 border-2 border-pink-500 px-3 py-1 rounded-full hover:bg-pink-400 transition-colors text-xs w-full sm:w-auto"
                                                         >
-                                                            View
+                                                            View Details
                                                             <ArrowRight className="w-3 h-3 ml-1 group-hover:translate-x-1 transition-transform" />
                                                         </Button>
                                                     </Link>
