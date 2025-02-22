@@ -7,7 +7,7 @@ import { NextRequest, NextResponse } from "next/server";
 //UPDATE isActive STATUS
 export async function PATCH(
     req: NextRequest,
-    { params }: { params: { startupId: string } }
+    { params }: { params: Promise<{ startupId: string }> }
 ) {
     try {
         const startupId = (await params).startupId;  // Removed unnecessary await
