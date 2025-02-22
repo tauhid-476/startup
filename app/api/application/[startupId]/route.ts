@@ -152,7 +152,9 @@ export async function POST(req: NextRequest, { params }: { params: { startupId: 
 }
 
 //GET ALL THE APPLICATIONS OF A SPECIFIC STARTUP
-export async function GET(req: NextRequest, { params }: { params: { startupId: string } }) {
+export async function GET(req: NextRequest,
+    { params }: { params: Promise<{ startupId: string }> }
+) {
 
     try {
         const session = await getServerSession(authOptions);
