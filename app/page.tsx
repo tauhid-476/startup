@@ -1,6 +1,6 @@
 "use client"
 import { motion } from 'framer-motion';
-import { ArrowRight, Loader, Loader2, Rocket, Users } from 'lucide-react';
+import { ArrowRight, Loader, Rocket, Users } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { useEffect } from 'react';
@@ -53,8 +53,8 @@ export default function Home() {
               Connect with the Next Big Thing
             </h1>
             <p className="text-xl text-gray-400 mb-12 max-w-2xl mx-auto">
-              Whether you're building the future or looking to join groundbreaking startups,
-              we're here to make the connection happen.
+              Whether you&apos;re building the future or looking to join groundbreaking startups,
+              we&apos;re here to make the connection happen.
             </p>
 
             {/* Buttons Container */}

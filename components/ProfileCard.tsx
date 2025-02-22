@@ -52,7 +52,7 @@ const ProfileCard = ({user, isCurrentUser}: ProfileCardProps) => {
   const handleProfileUpdate = async (data: FormValues) => {
     setLoading(true)
     try {
-      const result = await apiClient.updateProfile(data)
+      await apiClient.updateProfile(data)
       toast({ 
         title: "Success", 
         description: "Profile updated successfully" 

@@ -52,6 +52,7 @@ export function StartupCardDetails({ startup }: StartupCardProps) {
         description: "Failed to fetch status settings",
         variant: "destructive"
       });
+      console.log("error from startup details card.tsx", error)
     } finally {
       setIsSwitchLoading(false);
     }
@@ -59,7 +60,9 @@ export function StartupCardDetails({ startup }: StartupCardProps) {
 
   useEffect(() => {
     if (!session?.user) return;
-    isOwner && fetchStartupStatus();
+    if (isOwner) {
+      fetchStartupStatus();
+    }
   }, [session, fetchStartupStatus]);
 
   const handleSwitchChange = async () => {
@@ -78,7 +81,7 @@ export function StartupCardDetails({ startup }: StartupCardProps) {
         description: "Failed to update status",
         variant: "destructive"
       });
-
+     console.log("error from startup details card.tsx", error)
     } finally {
       setIsSwitchLoading(false);
     }

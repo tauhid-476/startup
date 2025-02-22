@@ -95,7 +95,7 @@ export default function ProfileDashboard({
       isCurrentUser ? fetchCandidateApplications() : Promise.resolve(),
       isFounder ? fetchFounderStartups() : Promise.resolve()
     ]).finally(() => setLoading(false))
-  }, [userId, isCurrentUser, isFounder])
+  }, [userId, isCurrentUser, isFounder, toast])
 
 
   if (status === "loading") {

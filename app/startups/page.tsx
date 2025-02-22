@@ -30,7 +30,7 @@ export default function StartupsPage() {
     }
 
     fetchStartups()
-  }, []) 
+  }, [toast]) 
 //
   if (loading) {
     return (

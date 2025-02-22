@@ -2,13 +2,12 @@ import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Users, Calendar, ArrowRight, PlusCircle, CheckCircle } from "lucide-react";
+import { Users, Calendar, ArrowRight, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Startup } from "@/types/Startup";
 import { formatDistanceToNow } from "date-fns";
 import { getInitials } from "@/lib/utils";
 import Link from "next/link";
-import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 interface StartupsSectionProps {
     startups: Startup[];

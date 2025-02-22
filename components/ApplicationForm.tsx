@@ -56,6 +56,7 @@ const ApplicationForm = ({ startupId }: ApplicationFormProps) => {
         description: "Failed to submit application. Please try again.",
         variant: "destructive",
       });
+      console.error("Error submitting application:", error);
     } finally {
       setSubmitting(false);
     }

@@ -1,7 +1,7 @@
 import { Application } from "@/types/Application";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Github, Linkedin, Twitter, Mail, Loader2, Loader2Icon, Loader } from "lucide-react";
+import { Github, Linkedin, Twitter, Mail, Loader } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
@@ -9,8 +9,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
+import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { apiClient } from "@/lib/apiclient";
 import {
@@ -52,6 +51,8 @@ export function ApplicationList(
     applicationId: null,
   });
   const { toast } = useToast();
+
+  console.log(selectedApplication)
 
   const handleOpenDialog = (applicationId: string, type: "ACCEPTED" | "REJECTED") => {
     setDialogState({
