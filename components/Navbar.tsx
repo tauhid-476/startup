@@ -119,7 +119,7 @@ const Navbar = () => {
           <div className="space-y-2">
             {session ? (
               <>
-                <Link href="/profile" className="block text-gray-600 hover:text-pink-500 transition-colors">
+                <Link href={`/profile/${session.user?.id}`} className="block text-gray-600 hover:text-pink-500 transition-colors">
                   Profile
                 </Link>
                 <Button
