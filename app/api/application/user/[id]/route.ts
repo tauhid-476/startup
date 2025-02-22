@@ -20,11 +20,11 @@ export async function GET(req: NextRequest,{ params }: { params: { id: string } 
         const applications = await prisma.application.findMany({
             where: {
                 applicantId: id
+            },
+            include: {
+                startup: true,
             }
         })
-
-        if(!applications || applications.length === 0)
-          return NextResponse.json({ error: "No applications found" }, { status: 404 });
 
         return NextResponse.json(applications, { status: 200 });
 

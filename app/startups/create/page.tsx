@@ -11,27 +11,60 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { useRouter } from "next/navigation"
+import { useSession } from "next-auth/react"
+import { z } from "zod"
+import { zodResolver } from "@hookform/resolvers/zod"
+
+
+const startupSchema = z.object({
+    title: z.string().min(1, "Title is required").max(20, "Title must be less than 20 characters"),
+    description: z.string().min(10, "Description is required").max(300, "Description must be less than 100 characters"),
+    pitch: z.string().min(20, "Pitch is required").max(1000, "Pitch must be less than 1000 characters"),
+    category: z.string().optional(),
+    image: z.string().optional(),
+    maxApplicants: z.number().min(1, "Maximum applicants must be at least 1"),
+    hiringQuantity: z.number().min(1, "Hiring quantity must be at least 1")
+})
 
 const StartupForm = () => {
   const [loading, setLoading] = useState(false)
   const { toast } = useToast()
+  const { data: session } = useSession()
   const router = useRouter()
   const {
     register,
     handleSubmit,
     setValue,
+    watch,
     formState: { errors },
   } = useForm<StartupFormData>({
     defaultValues: {
       title: "",
       description: "",
       pitch: "",
-      category: "",
-      image: "",
+      category: undefined,
+      image: undefined,
       maxApplicants: 1,
       hiringQuantity: 1,
     },
+    resolver: zodResolver(startupSchema),
   })
+
+  const title = watch("title")
+  const description = watch("description")
+  const pitch = watch("pitch")
+  const image = watch("image")
+  const maxApplicants = watch("maxApplicants")
+  const hiringQuantity = watch("hiringQuantity")
+
+  // Check if all required fields are filled
+  const isFormValid =
+    title.trim() !== "" &&
+    description.trim() !== "" &&
+    pitch.trim() !== "" &&
+    image !== undefined &&
+    maxApplicants > 0 &&
+    hiringQuantity > 0
 
   const handleUploadSuccess = (response: IKUploadResponse) => {
     const imageUrl = response.url;
@@ -59,7 +92,7 @@ const StartupForm = () => {
       setValue("maxApplicants", 1);
       setValue("hiringQuantity", 1);
 
-      router.push("/startups")
+      router.push(`/profile/${session?.user.id}`)
     } catch (error) {
       toast({
         title: "Error",
@@ -193,7 +226,7 @@ const StartupForm = () => {
                 type="submit"
                 className={`w-full bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white font-medium py-2.5 rounded-lg transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] ${loading ? "opacity-75 cursor-not-allowed" : ""
                   }`}
-                disabled={loading}
+                disabled={loading || !isFormValid}
               >
                 {loading ? (
                   <div className="flex items-center justify-center gap-2">

@@ -4,12 +4,14 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 import { verifyFounder } from "@/lib/is-founder";
+import { sendPendingMail } from "@/lib/mails";
 
-const githubRegex = /^https:\/\/(www\.)?github\.com\/[a-zA-Z0-9_-]+\/?$/;
-const twitterRegex = /^https:\/\/(www\.)?(twitter\.com|x\.com)\/[a-zA-Z0-9_]{1,15}\/?$/;
+
+const githubRegex = /^https?:\/\/(www\.)?github\.com\/[a-zA-Z0-9](?:[a-zA-Z0-9]|-(?=[a-zA-Z0-9])){0,37}[a-zA-Z0-9]\/?$/;
+const twitterRegex = /^https?:\/\/(www\.)?(twitter|x)\.com\/[a-zA-Z[a-zA-Z0-9_]{3,14}\/?$/;
 // const linkedinRegex = /^https:\/\/(www\.)?linkedin\.com\/in\/[\w\-\.]{3,100}\/?$/;
 
-export const applicationSchema = z.object({
+const applicationSchema = z.object({
     github: z.string().regex(githubRegex, "Invalid GitHub profile link").optional(),
     twitter: z.string().regex(twitterRegex, "Invalid Twitter/X profile link").optional(),
     linkedin: z.string().optional(),
@@ -80,15 +82,15 @@ export async function POST(req: NextRequest, { params }: { params: { startupId: 
 
         if (existingApplication) {
             return NextResponse.json(
-                { error: "You have already applied for this startup for the application id:",existingApplication },
+                { error: "You have already applied for this startup for the application id:", existingApplication },
                 { status: 400 }
             )
         }
 
         const body = await req.json();
-        console.log("body is",body)
+        console.log("body is", body)
         const validBody = applicationSchema.safeParse(body);
-        console.log("valid body is",validBody)
+        console.log("valid body is", validBody)
 
         // if (body.github) {
         //     console.log("GitHub URL test:", githubRegex.test(body.github));
@@ -112,11 +114,19 @@ export async function POST(req: NextRequest, { params }: { params: { startupId: 
                 data: {
                     ...validBody.data,
                     startupId,
+                    email: session.user.email,
                     applicantId: session.user.id,
                 },
                 include: {
-                    user: true
+                    user: true,
+                    startup: true
                 }
+            })
+
+            sendPendingMail({
+                startupTitle: newApplication.startup.title,
+                applicationId: newApplication.id,
+                email: session.user.email
             })
 
             await prisma.startup.update({
@@ -169,37 +179,30 @@ export async function GET(req: NextRequest, { params }: { params: { startupId: s
         const startup = await prisma.startup.findUnique({
             where: { id: startupId },
             select: { postedById: true }
-            })
-        
-            if(startup?.postedById !== session.user.id){
-                return NextResponse.json(
-                    { error: "You are not owner of this startup's applications" },
-                    { status: 403 }
-                )
-            }
+        })
+
+        if (startup?.postedById !== session.user.id) {
+            return NextResponse.json(
+                { error: "You are not owner of this startup's applications" },
+                { status: 403 }
+            )
+        }
 
         const applications = await prisma.application.findMany({
             where: {
                 startupId
             },
             include: {
-            user: {
-                select: {
-                    id: true,
-                    name: true,
-                    email: true,
-                    image: true
+                user: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true,
+                        image: true
+                    }
                 }
             }
-            }
         })
-
-        if (!applications || applications.length === 0) {
-            return NextResponse.json(
-                { message: "No applications found" },
-                { status: 404 }
-            )
-        }
 
         return NextResponse.json(applications, { status: 200 })
 

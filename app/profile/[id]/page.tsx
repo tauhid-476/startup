@@ -1,33 +1,19 @@
 "use client"
-import FileUpload from "@/components/FileUpload"
 import { useEffect, useState } from "react"
-import { IKUploadResponse } from "imagekitio-next/dist/types/components/IKUpload/props"
-import { useForm } from "react-hook-form"
 import { useToast } from "@/hooks/use-toast"
 import { useSession } from "next-auth/react"
 import { apiClient } from "@/lib/apiclient"
 import { Startup } from "@/types/Startup"
 import { motion } from "framer-motion"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { getInitials } from "@/lib/utils"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { Crown, Loader, PenSquare } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
+import { Loader, Loader2 } from "lucide-react"
 import UserStartupsSection from "@/components/UserStartupsSection"
+import CandidateApplicationsSection from "@/components/CandidateApplicationsSection"
+import { User } from "@/types/User"
+import ProfileCard from "@/components/ProfileCard"
+import { Application } from "@/types/Application"
 
-
-interface FormValues {
+export interface FormValues {
   imageUrl: string
-}
-
-interface User {
-  name: string
-  email: string
-  image: string
-  role: string
-  bio: string
 }
 
 export default function ProfileDashboard({
@@ -35,22 +21,17 @@ export default function ProfileDashboard({
 }: {
   params: Promise<{ id: string }>
 }) {
-  const [user, setUser] = useState<User>()
+  const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(false)
   const [userId, setUserId] = useState("")
   const [startups, setStartups] = useState<Startup[]>([])
-  const [isDialogOpen, setIsDialogOpen] = useState(false)
   const { toast } = useToast()
-  const { data: session } = useSession()
+  const [applications, setApplications] = useState<Application[]>([])
+  const { data: session, status } = useSession()
 
   const isFounder = session?.user.role === "FOUNDER"
+  const isCandidate = session?.user.role === "CANDIDATE"
   console.log("isFounder value is", isFounder)
-
-  const { register, handleSubmit, setValue } = useForm<FormValues>({
-    defaultValues: {
-      imageUrl: ""
-    }
-  })
 
   useEffect(() => {
     const getParamId = async () => {
@@ -63,15 +44,11 @@ export default function ProfileDashboard({
   const isCurrentUser = session?.user.id === userId
 
   useEffect(() => {
+    if (!userId) return
+
     const fetchUser = async () => {
-      setLoading(true)
-      if (!userId) return
       try {
-        const response = await fetch(`/api/user/${userId}`)
-        if (!response.ok) {
-          throw new Error('Failed to fetch user')
-        }
-        const user = await response.json()
+        const user = await apiClient.getUser(userId)
         setUser(user)
         console.log("user and isCurrentUSer", user, isCurrentUser, user.role)
       } catch (error) {
@@ -80,16 +57,13 @@ export default function ProfileDashboard({
           title: "Error loading profile",
           variant: "destructive"
         })
-      } finally {
-        setLoading(false)
       }
     }
 
-    const fetchUserPosts = async () => {
-      setLoading(true)
-      if (!userId) return
+    const fetchFounderStartups = async () => {
+      if (!isCurrentUser) return
       try {
-        const response = await apiClient.getUserStartups(userId)
+        const response = await apiClient.getFounderStartups(userId)
         setStartups(response)
       } catch (error) {
         console.error("Error fetching user:", error)
@@ -97,52 +71,52 @@ export default function ProfileDashboard({
           title: "Error loading profile",
           variant: "destructive"
         })
-      } finally {
-        setLoading(false)
       }
     }
-    //
-    fetchUser()
-    fetchUserPosts()
-  }, [userId])
 
-  const handleUploadSuccess = async (response: IKUploadResponse) => {
-    const imageUrl = response.url
-    setValue("imageUrl", imageUrl)
-    try {
-      await handleProfileUpdate({ imageUrl })
-    } catch (error) {
-      console.error("Error updating profile picture:", error)
-      toast({
-        title: "Error updating profile picture",
-        variant: "destructive"
-      })
+    const fetchCandidateApplications = async () => {
+      if (!isCurrentUser) return
+      try {
+        const applications = await apiClient.getCandidateApplications(userId)
+        setApplications(applications)
+      } catch (error) {
+        console.error("Error fetching user:", error)
+        toast({
+          title: "Error loading profile",
+          variant: "destructive"
+        })
+      }
     }
+
+    //
+    setLoading(true)
+    Promise.all([
+      fetchUser(),
+      isCurrentUser ? fetchCandidateApplications() : Promise.resolve(),
+      isFounder ? fetchFounderStartups() : Promise.resolve()
+    ]).finally(() => setLoading(false))
+  }, [userId, isCurrentUser, isFounder])
+
+
+  if (status === "loading") {
+    return <Loader2 className="animate-spin self-center" />
   }
 
-  const handleProfileUpdate = async (data: FormValues) => {
-    setLoading(true);
-    try {
-      const result = await apiClient.changePfp(data.imageUrl);
-      setUser(prev => prev ? { ...prev, image: data.imageUrl } : prev);
-      toast({ title: "Success", description: result.message || "Profile picture updated successfully" });
-      setIsDialogOpen(false);
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : "Failed to update profile picture",
-        variant: "destructive"
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-black">
+        <Loader className="h-10 w-10 animate-spin text-white" />
+      </div>
+    )
+  }
 
-  if (loading) return (
-    <div className="flex items-center justify-center min-h-screen bg-black">
-      <Loader className="h-10 w-10 animate-spin text-white" />
-    </div>
-  )
+  if (!user) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-black text-white">
+        <p>Profile not found</p>
+      </div>
+    )
+  }
 
   return (
     <motion.div
@@ -155,86 +129,21 @@ export default function ProfileDashboard({
         <div className="grid gap-6 md:grid-cols-12">
           <div className="md:col-span-3">
 
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              <Card className="bg-black border-gray-500 backdrop-blur-sm">
-                <CardHeader>
-                  <CardTitle className="text-white text-center text-xl md:text-2xl">Profile</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex flex-col items-center space-y-4 h-auto">
-                    <motion.div
-                      className="relative"
-                      whileHover={{ scale: 1.02 }}
-                      transition={{ type: "spring", stiffness: 300 }}
-                    >
-                      <Avatar className="h-32 w-32">
-                        <AvatarImage src={user?.image || ''} alt="Profile picture" />
-                        <AvatarFallback className="text-2xl">{getInitials(user?.name)}</AvatarFallback>
-                      </Avatar>
-                      {isCurrentUser && (
-                        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                          <DialogTrigger asChild>
-                            <Button
-                              size="icon"
-                              variant="secondary"
-                              className="absolute bottom-0 right-0 rounded-full hover:scale-105 transition-transform"
-                              title="Change profile photo"
-                            >
-                              <PenSquare className="h-4 w-4" />
-                            </Button>
-                          </DialogTrigger>
-                          <DialogContent className="bg-black text-white">
-                            <DialogHeader>
-                              <DialogTitle>Update Profile Picture</DialogTitle>
-                            </DialogHeader>
-                            <form onSubmit={handleSubmit(handleProfileUpdate)} className="space-y-4">
-                              <input type="hidden" {...register("imageUrl")} />
-                              <FileUpload onSuccess={handleUploadSuccess} fileType="image" />
-                            </form>
-                          </DialogContent>
-                        </Dialog>
-                      )}
-                    </motion.div>
-
-                    <motion.div
-                      className="space-y-4 w-full text-center"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ delay: 0.2 }}
-                    >
-                      <div className="space-y-2 text-white">
-                        {user?.role === "FOUNDER" ? (
-                          <Badge variant="secondary" className="animate-fade-in">
-                            <Crown className="w-4 h-4 text-yellow-500 mr-1" />
-                            {user.role}
-                          </Badge>
-                        ) : (
-                          <Badge variant="secondary" className="animate-fade-in">
-                            {user?.role}
-                          </Badge>
-                        )}
-                        <h2 className="text-xl font-semibold">{user?.name || 'User Name'}</h2>
-                        <p className="text-sm text-gray-500">{user?.email || 'email@example.com'}</p>
-                      </div>
-                      <div className="pt-2">
-                        <h3 className="text-sm font-medium mb-2">About</h3>
-                        <p className="text-sm text-muted-foreground">{user?.bio || 'No bio available'}</p>
-                      </div>
-                    </motion.div>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
+            {user && <ProfileCard user={user} isCurrentUser={isCurrentUser} />}
 
           </div>
           <div className="md:col-span-9">
-            {isCurrentUser &&
-              <UserStartupsSection startups={startups} />
-            }
+            {isCurrentUser ? (
+              <>
+                {isFounder && <UserStartupsSection startups={startups} />}
+                {isCandidate && <CandidateApplicationsSection applications={applications} />}
+              </>
+            ) : (
+              <div>
+                <h2 className="text-2xl font-bold mb-4">Public Profile</h2>
+                <p>This is {user.name}&apos;s public profile.</p>
+              </div>
+            )}
           </div>
         </div>
       </div>

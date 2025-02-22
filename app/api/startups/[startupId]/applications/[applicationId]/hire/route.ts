@@ -1,5 +1,6 @@
 import { authOptions } from "@/lib/auth";
 import { verifyFounder } from "@/lib/is-founder";
+import { sendAcceptedMail, sendRejectedMail } from "@/lib/mails";
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
@@ -14,7 +15,7 @@ enum ApplicationStatus {
     ACCEPTED = "ACCEPTED",
     REJECTED = "REJECTED",
 }
-
+//
 //hire
 export async function POST(req: NextRequest, { params }: { params: RouteParams }) {
     try {
@@ -86,6 +87,20 @@ export async function POST(req: NextRequest, { params }: { params: RouteParams }
                 await prisma.startup.update({
                     where: { id: startupId },
                     data: { currentyHired: { increment: 1 } }
+                })
+
+                sendAcceptedMail({
+                    startupTitle: startup.title,
+                    applicationId,
+                    email: updated.user.email
+                })
+            }
+
+            if(status === "REJECTED"){
+                sendRejectedMail({
+                    startupTitle: startup.title,
+                    applicationId,
+                    email: updated.user.email
                 })
             }
             return updated;

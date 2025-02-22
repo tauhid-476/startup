@@ -3,6 +3,11 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth"; // Adjust path if needed
 import { prisma } from "@/lib/prisma"; // Ensure you have a Prisma instance
 
+interface updateData {
+    name?: string;
+    bio?: string;
+    image?: string;
+}
 
 export async function PATCH(req: NextRequest) {
     try {
@@ -12,18 +17,26 @@ export async function PATCH(req: NextRequest) {
         }
         const userId = session.user.id;
 
-        const { imageUrl } = await req.json();
+        const { name, bio, imageUrl } = await req.json();
+        const updateData: updateData = {}
 
-        if (!imageUrl) {
-            return NextResponse.json({ error: "Image URL is required" }, { status: 400 });
+        if (name) updateData.name = name
+        if (bio) updateData.bio = bio
+        if (imageUrl) updateData.image = imageUrl
+
+        if (Object.keys(updateData).length === 0) {
+            return NextResponse.json({ error: "No data to update" }, { status: 400 });
         }
 
-        await prisma.user.update({
+        const updatedUser = await prisma.user.update({
             where: { id: userId },
-            data: { image: imageUrl },
-        });
-        return NextResponse.json({ message: "Image updated successfully." });
-
+            data: updateData,
+        })
+        return NextResponse.json({
+            message: "Profile updated successfully.",
+            user: updatedUser
+        })
+        
     } catch (error) {
         console.error("Error updating profile picture:", error);
         return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });

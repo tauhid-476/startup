@@ -5,10 +5,10 @@ import { prisma } from "@/lib/prisma"
 import { z } from "zod"
 import { verifyFounder } from "../../../lib/is-founder"
 
-export const startupSchema = z.object({
+const startupSchema = z.object({
     title: z.string().min(1, "Title is required").max(20, "Title must be less than 20 characters"),
-    description: z.string().min(10, "Description is required").max(100, "Description must be less than 100 characters"),
-    pitch: z.string().min(20, "Pitch is required").max(1000, "Pitch must be less than 200 characters"),
+    description: z.string().min(10, "Description is required").max(300, "Description must be less than 100 characters"),
+    pitch: z.string().min(20, "Pitch is required").max(1000, "Pitch must be less than 1000 characters"),
     category: z.string().optional(),
     image: z.string().optional(),
     maxApplicants: z.number().min(1, "Maximum applicants must be at least 1"),
@@ -113,7 +113,8 @@ export async function GET() {
                         image: true,
                     }
                 },
-            }
+                applications: true
+            },
         })
 
         if (!startups.length) {

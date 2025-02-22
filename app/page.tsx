@@ -1,17 +1,22 @@
 "use client"
 import { motion } from 'framer-motion';
-import { ArrowRight, Rocket, Users } from 'lucide-react';
+import { ArrowRight, Loader, Loader2, Rocket, Users } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { useEffect } from 'react';
 
 export default function Home() {
-  const { data: session } = useSession()
+  const { data: session, status } = useSession()
   const isFounder = session?.user.role === "FOUNDER"
 
   useEffect(() => {
     console.log(session?.user.id)
   })
+
+  if(status === "loading")
+    return <div className="min-h-screen flex items-center justify-center">
+      <Loader className="h-10 w-10 animate-spin text-white" />
+    </div>
 
   return (
     <div className="min-h-screen overflow-hidden bg-black text-white">

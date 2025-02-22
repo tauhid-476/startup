@@ -74,6 +74,7 @@ export default function FileUpload({
                     className="file-input file-input-bordered text-white file-input-secondary w-full"
                     validateFile={validateFile}
                     useUniqueFileName={true}
+                    disabled={uploading}
                     folder={"/college-projects"}
                 /> 
             {

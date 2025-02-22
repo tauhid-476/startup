@@ -1,3 +1,5 @@
+import { Application } from "./Application"
+
 export interface Startup {
    id: string
    title: string
@@ -15,10 +17,11 @@ export interface Startup {
       name: string
       image: string
    }
+   applications: Application[]
    createdAt: Date
    updatedAt: Date
 }
 
-export type StartupFormData = Omit<Startup, "id" | "postedById" | "createdAt" | "updatedAt">
+export type StartupFormData = Omit<Startup, "id" | "postedById" | "createdAt" | "updatedAt" | "postedBy" | "applications" | "currentApplicants" | "createdAt" | "updatedAt" | "isActive">
 
 

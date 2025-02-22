@@ -1,5 +1,5 @@
 "use client"
-import StartupsSection from "@/components/StartupsSection"
+import StartupsSection from "@/components/HomeStartups"
 import { apiClient } from '@/lib/apiclient'
 import { Startup } from '@/types/Startup'
 import { useToast } from '@/hooks/use-toast'
@@ -36,7 +36,6 @@ export default function StartupsPage() {
     return (
       <div className="flex  bg-black items-center min-h-screen justify-center">
         <Loader className="h-12 w-12 animate-spin text-white" />
-        
       </div>
     )
   }

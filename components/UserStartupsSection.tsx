@@ -64,7 +64,7 @@ export default function UserStartupsSection(
                             whileHover={{ scale: 1.02 }}
                             className="group"
                         >
-                            <Card className="bg-gray-900 border-gray-700 hover:border-gray-500 transition-colors duration-200 overflow-hidden">
+                            <Card className="bg-gray-900 border-gray-700 hover:border-gray-500 transition-colors duration-200 overflow-hidden h-[28rem]">
                                 <CardContent className="p-0">
                                     {/* Startup Image Section */}
                                     <div className="relative w-full h-48">
@@ -105,7 +105,7 @@ export default function UserStartupsSection(
                                             <div className="flex items-center space-x-2 text-gray-400 bg-gray-800 px-3 py-1 rounded-full">
                                                 <Users className="w-4 h-4" />
                                                 <span className="text-sm">
-                                                    {startup.hiringQuantity}/{startup.maxApplicants}
+                                                    {startup.currentApplicants}/{startup.maxApplicants}
                                                 </span>
                                             </div>
                                         </div>
