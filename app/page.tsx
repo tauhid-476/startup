@@ -79,7 +79,7 @@ export default function Home() {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                   >
-                    <Link href="/startups">
+                    <Link href="/register">
                       <button className="group flex items-center gap-2 bg-white text-pink-500 border-2 border-pink-500 px-8 py-4 rounded-full text-lg font-semibold hover:bg-pink-50 transition-colors">
                         <Users className="w-5 h-5" />
                         Find Startups
