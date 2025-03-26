@@ -18,14 +18,6 @@ export default function StartupsPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [searching, setSearching] = useState(false)
   const { toast } = useToast()
-  const searchParams = useSearchParams()
-
-  // Clear the cache when this component is unmounted
-  useEffect(() => {
-    return () => {
-      // Keep the cache when navigating away
-    }
-  }, [])
 
   useEffect(() => {
     const loadStartups = async () => {
