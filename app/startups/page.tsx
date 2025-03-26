@@ -7,7 +7,6 @@ import React, { useEffect, useState } from 'react'
 import { Loader, Search } from 'lucide-react'
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { useSearchParams } from 'next/navigation'
 
 // Global cache to store startups data
 let cachedStartups: Startup[] | null = null
