@@ -57,6 +57,7 @@ export async function sendPendingMail({ startupTitle, applicationId, email }: Ma
 
     } catch (error) {
         console.error("Error sending email:", error);
+        console.log("Error sending email")
         return NextResponse.json("Error sending email", { status: 500 });
     }
 }

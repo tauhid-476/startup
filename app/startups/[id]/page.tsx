@@ -27,7 +27,6 @@ function StartupDashboard({
 
     const isCandidate = session?.user.role === "CANDIDATE";
 
-    // Check authentication before attempting to fetch any data.
     useEffect(() => {
         const getStartupId = async () => {
             const id = (await params).id
@@ -45,24 +44,16 @@ function StartupDashboard({
     }, [session, status, router]);
 
 
-
     useEffect(() => {
         const fetchStartupAndItsApplications = async () => {
             if (status === "loading" || !session || !startupId) return;
-            // Wait for all dependencies
             setLoading(true)
             try {
                 const fetchedStartup = await apiClient.getStartup(startupId);
                 setStartup(fetchedStartup);
-                console.log("fetchedStartup is ", fetchedStartup)
 
                 const owner = session.user.id === fetchedStartup.postedById;
-                console.log("Session user ID:", session.user.id);
-                console.log("Startup postedById:", fetchedStartup.postedById);
-                console.log("Are they equal?", session.user.id === fetchedStartup.postedById);
                 setIsOwner(owner);
-                console.log("oswner variabl eis ", owner)
-
                 if (!owner && session.user.role !== "CANDIDATE") {
                     toast({
                         title: "Access Denied",

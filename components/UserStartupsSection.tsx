@@ -37,6 +37,10 @@ const itemVariants = {
 export default function UserStartupsSection(
     { startups }: StartupsSectionProps,
 ) {
+
+    if (startups.length === 0) 
+        <div>You have not created any startups yet.</div>
+
     return (
         <Card className="bg-black border-gray-500 backdrop-blur-sm">
             <CardHeader className="flex flex-row justify-between items-center">

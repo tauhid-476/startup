@@ -60,6 +60,10 @@ class ApiClient {
         return this.fetch<Startup[]>("/startups")
     }
 
+    async searchStartups(query: string) {
+        return this.fetch<Startup[]>(`/startups/search?q=${encodeURIComponent(query)}`)
+    }
+
     async getStartup(id: string) {
         return this.fetch<Startup>(`/startups/${id}`)
     }

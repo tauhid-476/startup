@@ -6,7 +6,7 @@ import { z } from "zod";
 import { verifyFounder } from "@/lib/is-founder";
 import { sendPendingMail } from "@/lib/mails";
 
-
+//TODO: ADDIBNG PDF UPLOAD
 const githubRegex = /^https?:\/\/(www\.)?github\.com\/[a-zA-Z0-9](?:[a-zA-Z0-9]|-(?=[a-zA-Z0-9])){0,37}[a-zA-Z0-9]\/?$/;
 const twitterRegex = /^https?:\/\/(www\.)?(twitter|x)\.com\/[a-zA-Z[a-zA-Z0-9_]{3,14}\/?$/;
 // const linkedinRegex = /^https:\/\/(www\.)?linkedin\.com\/in\/[\w\-\.]{3,100}\/?$/;
